@@ -48,21 +48,30 @@
         </div>
     </div>
 
+    <div id="successMessage" class="alert alert-success alert-dismissible fade show d-none" role="alert">
+        <i class="bi bi-check-circle-fill"></i> Thank you! Your message has been sent successfully. We'll get back to you soon.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div id="errorMessage" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i> <span id="errorText">Oops! There was an error sending your message. Please try again or contact us directly.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
     <div class="row">
         <div class="col-lg-8 mb-4">
             <div class="card">
                 <div class="card-body p-4">
                     <h4 class="card-title mb-4">Send Us a Message</h4>
-                    <form method="post" action="/Home/Contact">
+                    <form id="contactForm">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="name" class="form-label">Your Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="name" name="name" required="">
+                                <label for="from_name" class="form-label">Your Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="from_name" name="from_name" required="">
                             </div>
                             <div class="col-md-6">
-                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" id="email" name="email" required="">
+                                <label for="reply_to" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="reply_to" name="reply_to" required="">
                             </div>
                             <div class="col-12">
                                 <label for="phone" class="form-label">Phone Number</label>
@@ -73,10 +82,13 @@
                                 <textarea class="form-control" id="message" name="message" rows="6" required=""></textarea>
                             </div>
                             <div class="col-12">
-                                <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+                                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                    <span id="submitText">Send Message</span>
+                                    <span id="submitSpinner" class="spinner-border spinner-border-sm d-none ms-2" role="status" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </div>
-                    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8KXPFrGuK8BHpiG7d6oKtfdTR-vyz8NiWxOyDGytsMAimKNcGKLH10uX13b6vo1hX4BQKXxxzEmr6L9gdng5oAwEi5jwmmvMvAyDBvU9DzVcm4PUTjdsgz2_cD608dhK39PG7f10bsC-vSF92_zSHPo"></form>
+                    </form>
                 </div>
             </div>
         </div>
@@ -89,17 +101,19 @@
                         <div class="mb-3">
                             <i class="bi bi-geo-alt text-primary"></i>
                             <strong>Address</strong>
-                            <p class="mb-0 text-muted">123 Main Street<br>Boise, ID 83702</p>
+                            <p class="mb-0 text-muted">Select Properties <br>547 E Seventh St.<br>Weiser, ID 83672</p>
                         </div>
                         <div class="mb-3">
                             <i class="bi bi-telephone text-primary"></i>
                             <strong>Phone</strong>
-                            <p class="mb-0 text-muted">(208) 555-0123</p>
+                            <p class="mb-0 text-muted">Julie Chandler: (208) 550-1121</p>
+                            <p class="mb-0 text-muted">Bailey Chandler: (208) 392-2578</p>
                         </div>
                         <div class="mb-3">
                             <i class="bi bi-envelope text-primary"></i>
                             <strong>Email</strong>
-                            <p class="mb-0 text-muted">info@chandlerrealestate.com</p>
+                            <p class="mb-0 text-muted">julie@selectpropertiesllc.com</p>
+                            <p class="mb-0 text-muted">bailey@selectpropertiesllc.com</p>
                         </div>
                         <div>
                             <i class="bi bi-clock text-primary"></i>
@@ -114,10 +128,8 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Follow Us</h5>
                     <div class="d-flex gap-3">
-                        <a href="#" class="btn btn-outline-primary btn-sm"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="btn btn-outline-primary btn-sm"><i class="bi bi-twitter"></i></a>
-                        <a href="#" class="btn btn-outline-primary btn-sm"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="btn btn-outline-primary btn-sm"><i class="bi bi-linkedin"></i></a>
+                        <a href="https://www.facebook.com/ADMTigerFootball" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.instagram.com/scranksports" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-instagram"></i></a>
                     </div>
                 </div>
             </div>
@@ -125,7 +137,58 @@
     </div>
 </div>
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+    (function() {
+        emailjs.init('YFhM5GUiAeFSzYQ46');
 
+        const form = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        const submitSpinner = document.getElementById('submitSpinner');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            submitBtn.disabled = true;
+            submitText.textContent = 'Sending...';
+            submitSpinner.classList.remove('d-none');
+
+            successMessage.classList.add('d-none');
+            errorMessage.classList.add('d-none');
+
+            emailjs.sendForm('service_vcpe62h', 'template_j8qrb2o', form)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    successMessage.classList.remove('d-none');
+                    successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    form.reset();
+                })
+                .catch(function(error) {
+                    console.error('FAILED...', error);
+                    let errorMsg = 'Oops! There was an error sending your message. ';
+                    if (error && error.text) {
+                        errorMsg += 'Error: ' + error.text;
+                    } else {
+                        errorMsg += 'Please try again or contact us directly.';
+                    }
+                    errorText.textContent = errorMsg;
+                    errorMessage.classList.remove('d-none');
+                    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                })
+                .finally(function() {
+                    submitBtn.disabled = false;
+                    submitText.textContent = 'Send Message';
+                    submitSpinner.classList.add('d-none');
+                });
+        });
+    })();
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     </main>
 
     <footer b-aobjyjd3t7="" class="site-footer border-top text-muted bg-light">
@@ -147,9 +210,11 @@
                 <div b-aobjyjd3t7="" class="col-md-4 mb-3">
                     <h6 b-aobjyjd3t7="">Contact Info</h6>
                     <ul b-aobjyjd3t7="" class="list-unstyled small text-muted">
-                        <li b-aobjyjd3t7=""><i b-aobjyjd3t7="" class="bi bi-telephone"></i> (208) 555-0123</li>
-                        <li b-aobjyjd3t7=""><i b-aobjyjd3t7="" class="bi bi-envelope"></i> info@chandlerrealestate.com</li>
-                        <li b-aobjyjd3t7=""><i b-aobjyjd3t7="" class="bi bi-geo-alt"></i> Boise, Idaho</li>
+                        <li b-aobjyjd3t7=""><i b-aobjyjd3t7="" class="bi bi-telephone"></i> (208) 550-1121</li>
+                        <li b-aobjyjd3t7=""><i b-aobjyjd3t7="" class="bi bi-telephone"></i> (208) 392-2578</li>
+                        <li b-aobjyjd3t7=""><i b-aobjyjd3t7="" class="bi bi-envelope"></i> julie@selectpropertiesllc.com</li>
+                        <li b-aobjyjd3t7=""><i b-aobjyjd3t7="" class="bi bi-envelope"></i> bailey@selectpropertiesllc.com</li>
+                        <li b-aobjyjd3t7=""><i b-aobjyjd3t7="" class="bi bi-geo-alt"></i> Weiser, Idaho</li>
                     </ul>
                 </div>
             </div>
@@ -163,7 +228,5 @@
     <script src="lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/site.js?v=hRQyftXiu1lLX2P9Ly9xa4gHJgLeR1uGN5qegUobtGo"></script>
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-
 </body>
 </html>
