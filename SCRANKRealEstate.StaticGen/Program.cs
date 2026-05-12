@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using HtmlAgilityPack;
 
-var baseUrl = "http://localhost:5179"; // Updated to match your app's port
+var baseUrl = "http://localhost:5179";
 var outputPath = Path.Combine("..", "SCRANKRealEstate", "wwwroot-static");
 
 // Routes to crawl
@@ -29,6 +29,9 @@ foreach (var route in routes)
         Console.WriteLine($"Downloading {route}...");
         var html = await client.GetStringAsync(route);
         
+        // Fix absolute paths to relative paths
+        html = FixPaths(html);
+        
         // Determine output file path
         var fileName = route == "/" ? "index.html" : $"{route.Trim('/').Replace("/", "-")}.html";
         var filePath = Path.Combine(outputPath, fileName);
@@ -53,6 +56,63 @@ if (Directory.Exists(wwwrootSource))
 
 Console.WriteLine("\n✓ Static site generation complete!");
 Console.WriteLine($"Output directory: {Path.GetFullPath(outputPath)}");
+
+static string FixPaths(string html)
+{
+    var doc = new HtmlDocument();
+    doc.LoadHtml(html);
+    
+    // Fix <link> tags (CSS)
+    foreach (var link in doc.DocumentNode.SelectNodes("//link[@href]") ?? Enumerable.Empty<HtmlNode>())
+    {
+        var href = link.GetAttributeValue("href", "");
+        if (href.StartsWith("/") && !href.StartsWith("//"))
+        {
+            link.SetAttributeValue("href", href.TrimStart('/'));
+        }
+    }
+    
+    // Fix <script> tags (JavaScript)
+    foreach (var script in doc.DocumentNode.SelectNodes("//script[@src]") ?? Enumerable.Empty<HtmlNode>())
+    {
+        var src = script.GetAttributeValue("src", "");
+        if (src.StartsWith("/") && !src.StartsWith("//"))
+        {
+            script.SetAttributeValue("src", src.TrimStart('/'));
+        }
+    }
+    
+    // Fix <a> tags (links)
+    foreach (var anchor in doc.DocumentNode.SelectNodes("//a[@href]") ?? Enumerable.Empty<HtmlNode>())
+    {
+        var href = anchor.GetAttributeValue("href", "");
+        if (href.StartsWith("/") && !href.StartsWith("//") && !href.StartsWith("#"))
+        {
+            // Convert /Home/Privacy to Home-Privacy.html
+            if (href == "/")
+            {
+                anchor.SetAttributeValue("href", "index.html");
+            }
+            else
+            {
+                var pageName = href.Trim('/').Replace("/", "-") + ".html";
+                anchor.SetAttributeValue("href", pageName);
+            }
+        }
+    }
+    
+    // Fix <img> tags
+    foreach (var img in doc.DocumentNode.SelectNodes("//img[@src]") ?? Enumerable.Empty<HtmlNode>())
+    {
+        var src = img.GetAttributeValue("src", "");
+        if (src.StartsWith("/") && !src.StartsWith("//"))
+        {
+            img.SetAttributeValue("src", src.TrimStart('/'));
+        }
+    }
+    
+    return doc.DocumentNode.OuterHtml;
+}
 
 static void CopyDirectory(string sourceDir, string destDir)
 {
