@@ -2,8 +2,11 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
@@ -17,19 +20,34 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     
+    - name: Restore dependencies
+      run: |
+        cd SCRANKRealEstate
+        dotnet restore
+        cd ../SCRANKRealEstate.StaticGen
+        dotnet restore
+    
     - name: Run MVC app in background
       run: |
         cd SCRANKRealEstate
-        dotnet run &
-        sleep 10
+        nohup dotnet run --urls "http://localhost:5179" > app.log 2>&1 &
+        echo "Waiting for app to start..."
+        sleep 15
+        curl http://localhost:5179 || (cat app.log && exit 1)
     
     - name: Generate static site
       run: |
         cd SCRANKRealEstate.StaticGen
         dotnet run
     
+    - name: Verify static site was created
+      run: |
+        ls -la SCRANKRealEstate/wwwroot-static/
+        cat SCRANKRealEstate/wwwroot-static/index.html || echo "index.html not found"
+    
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./SCRANKRealEstate/wwwroot-static
+        force_orphan: true
