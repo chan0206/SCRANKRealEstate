@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+﻿name: Deploy to GitHub Pages
 
 on:
   push:
@@ -6,11 +6,21 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
     - uses: actions/checkout@v4
@@ -32,8 +42,8 @@ jobs:
         cd SCRANKRealEstate
         nohup dotnet run --urls "http://localhost:5179" > app.log 2>&1 &
         echo "Waiting for app to start..."
-        sleep 15
-        curl http://localhost:5179 || (cat app.log && exit 1)
+        sleep 20
+        curl -f http://localhost:5179 || (echo "App failed to start:" && cat app.log && exit 1)
     
     - name: Generate static site
       run: |
@@ -42,12 +52,19 @@ jobs:
     
     - name: Verify static site was created
       run: |
-        ls -la SCRANKRealEstate/wwwroot-static/
-        cat SCRANKRealEstate/wwwroot-static/index.html || echo "index.html not found"
+        echo "Contents of wwwroot-static:"
+        ls -la SCRANKRealEstate/wwwroot-static/ || echo "Directory not found"
+        echo "Checking for index.html:"
+        test -f SCRANKRealEstate/wwwroot-static/index.html && echo "✓ index.html exists" || echo "✗ index.html not found"
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+    
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './SCRANKRealEstate/wwwroot-static'
     
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./SCRANKRealEstate/wwwroot-static
-        force_orphan: true
+      id: deployment
+      uses: actions/deploy-pages@v4
