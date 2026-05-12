@@ -4,11 +4,27 @@ using HtmlAgilityPack;
 var baseUrl = "http://localhost:5179";
 var outputPath = Path.Combine("..", "SCRANKRealEstate", "wwwroot-static");
 
-// Routes to crawl
+// Routes to crawl - ADD YOUR NEW PAGES HERE
 var routes = new[]
 {
     "/",
-    "/Home/Privacy"
+    "/Home/Privacy",
+    "/Home/About",
+    "/Home/Contact",
+    "/Home/Properties",
+    "/Home/PropertyDetails/1",
+    "/Home/PropertyDetails/2",
+    "/Home/PropertyDetails/3",
+    "/Home/PropertyDetails/4",
+    "/Home/PropertyDetails/5",
+    "/Home/PropertyDetails/6",
+    "/Home/PropertyDetails/7",
+    "/Home/PropertyDetails/8",
+    "/Home/PropertyDetails/9",
+    "/Home/PropertyDetails/10",
+    "/Home/PropertyDetails/11",
+    "/Home/PropertyDetails/12"
+
 };
 
 Console.WriteLine("Starting static site generation...");

@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="~/SCRANKRealEstate.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <header class="site-header">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-0">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Chandler Real Estate</a>
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-house-door"></i> Chandler Real Estate
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -23,22 +25,53 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Properties">Properties</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    
+    <main class="site-main" role="main">
+        @RenderBody()
+    </main>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - SCRANKRealEstate - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="site-footer border-top text-muted bg-light">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-primary">Chandler Real Estate</h5>
+                    <p class="small">Your trusted partner for finding the perfect home in Idaho.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6>Quick Links</h6>
+                    <ul class="list-unstyled small">
+                        <li><a asp-controller="Home" asp-action="Properties" class="text-muted">Browse Properties</a></li>
+                        <li><a asp-controller="Home" asp-action="About" class="text-muted">About Us</a></li>
+                        <li><a asp-controller="Home" asp-action="Contact" class="text-muted">Contact</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy" class="text-muted">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6>Contact Info</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li><i class="bi bi-telephone"></i> (208) 555-0123</li>
+                        <li><i class="bi bi-envelope"></i> info@chandlerrealestate.com</li>
+                        <li><i class="bi bi-geo-alt"></i> Boise, Idaho</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center small">
+                &copy; 2026 Chandler Real Estate - All Rights Reserved
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -1,0 +1,94 @@
+@model SCRANKRealEstate.Models.Property
+@{
+    ViewData["Title"] = Model.Address;
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Property Image -->
+        <div class="col-lg-8 mb-4">
+            <div class="property-detail-image">
+                <img src="/images/default-house.jpg" class="img-fluid rounded" onerror="this.src='/images/properties/default-house.jpg'">
+            </div>
+        </div>
+
+        <!-- Property Info Card -->
+        <div class="col-lg-4 mb-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-body">
+                    <h2 class="property-detail-price text-primary mb-3">$@Model.Price.ToString("N0")</h2>
+                    <h5 class="card-title">@Model.Address</h5>
+                    <p class="text-muted">@Model.City, @Model.State @Model.ZipCode</p>
+                    
+                    <hr>
+                    
+                    <div class="property-quick-stats mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="bi bi-door-closed"></i> Bedrooms:</span>
+                            <strong>@Model.Bedrooms</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="bi bi-droplet"></i> Bathrooms:</span>
+                            <strong>@Model.Bathrooms</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="bi bi-arrows-angle-expand"></i> Square Feet:</span>
+                            <strong>@Model.SquareFeet.ToString("N0")</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="bi bi-house"></i> Type:</span>
+                            <strong>@Model.PropertyType</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="bi bi-calendar"></i> Listed:</span>
+                            <strong>@Model.ListedDate.ToString("MMM dd, yyyy")</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span><i class="bi bi-check-circle"></i> Status:</span>
+                            <strong class="@(Model.Status == "Available" ? "text-success" : "text-warning")">@Model.Status</strong>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <a asp-controller="Home" asp-action="Contact" class="btn btn-primary w-100 mb-2">Schedule a Viewing</a>
+                    <a asp-controller="Home" asp-action="Contact" class="btn btn-outline-primary w-100">Request Information</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Description -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Property Description</h4>
+                    <p class="card-text">@Model.Description</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-3">Location</h4>
+                    <p class="text-muted">@Model.Address, @Model.City, @Model.State @Model.ZipCode</p>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Map integration can be added here using Google Maps or similar service
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <a asp-controller="Home" asp-action="Properties" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Properties
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+}
