@@ -1,21 +1,29 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using SCRANKRealEstate.Models;
+using System.Data;
+using System.Diagnostics;
+using Microsoft.Data.SqlClient;
 
 namespace SCRANKRealEstate.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        public static class Global
+        {
+            public static string gstrConnectionString = "Server=Spennys_PC_25\\SQLEXPRESS;Database=SCRANK;Integrated Security=True;Trust Server Certificate=True";
+        }
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ILogger<HomeController> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public HomeController(ILogger<HomeController> logger, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
         {
-            // Sample data - in production, this would come from a database
             var featuredProperties = GetFeaturedProperties();
             return View(featuredProperties);
         }
@@ -49,7 +57,6 @@ namespace SCRANKRealEstate.Controllers
         [HttpPost]
         public IActionResult Contact(string name, string email, string phone, string message)
         {
-            // In production, save to database or send email
             _logger.LogInformation($"Contact form submitted by {name} ({email})");
             TempData["Message"] = "Thank you for contacting us! We'll get back to you soon.";
             return RedirectToAction("Contact");
@@ -66,125 +73,96 @@ namespace SCRANKRealEstate.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        // Sample data methods - replace with database calls in production
         private List<Property> GetFeaturedProperties()
         {
             return GetAllProperties().Where(p => p.IsFeatured).Take(6).ToList();
         }
 
+        public static void GetListings(DataTable pdtSchools)
+        {
+            string strqueryStatement = "Select * from tblRealEstateListingDetails";
+            CallQuery(strqueryStatement, pdtSchools, Global.gstrConnectionString);
+        }
+
+        public static void CallQuery(string pstrQuery, DataTable pdtTable, string pstrConnectionstring)
+        {
+            using (SqlConnection _con = new SqlConnection(pstrConnectionstring))
+            {
+                using (SqlCommand _cmd = new SqlCommand(pstrQuery, _con))
+                {
+                    SqlDataAdapter _dap = new SqlDataAdapter(_cmd);
+                    _con.Open();
+                    _dap.Fill(pdtTable);
+                    _con.Close();
+                }
+            }
+        }
+
+        // Helper method to get all images for a listing
+        private List<string> GetPropertyImages(int listingId)
+        {
+            var imageUrls = new List<string>();
+            var listingFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", $"Listing_{listingId}");
+
+            if (Directory.Exists(listingFolder))
+            {
+                var imageFiles = Directory.GetFiles(listingFolder, "*.jpg")
+                    .Concat(Directory.GetFiles(listingFolder, "*.jpeg"))
+                    .Concat(Directory.GetFiles(listingFolder, "*.png"))
+                    .OrderBy(f => f)
+                    .ToList();
+
+                foreach (var imageFile in imageFiles)
+                {
+                    var fileName = Path.GetFileName(imageFile);
+                    imageUrls.Add($"/images/Listing_{listingId}/{fileName}");
+                }
+            }
+
+            // If no images found, add default image
+            if (!imageUrls.Any())
+            {
+                imageUrls.Add("/images/default-house.jpg");
+            }
+
+            return imageUrls;
+        }
+
         private List<Property> GetAllProperties()
         {
-            return new List<Property>
+            var properties = new List<Property>();
+            DataTable dtProperties = new DataTable();
+            GetListings(dtProperties);
+
+            foreach (DataRow row in dtProperties.Rows)
             {
-                new Property
+                int listingId = Convert.ToInt32(row["flngListingKey"]);
+                
+                // Get all images for this listing
+                var imageUrls = GetPropertyImages(listingId);
+
+                properties.Add(new Property
                 {
-                    Id = 1,
-                    Address = "123 Mountain View Drive",
-                    City = "Boise",
-                    State = "Idaho",
-                    ZipCode = "83702",
-                    Price = 475000,
-                    Bedrooms = 4,
-                    Bathrooms = 2.5m,
-                    SquareFeet = 2400,
-                    PropertyType = "Single Family",
-                    Description = "Beautiful 4-bedroom home with stunning mountain views. Updated kitchen, hardwood floors, and spacious backyard perfect for entertaining.",
-                    ImageUrl = "/images/properties/house1.jpg",
-                    ListedDate = DateTime.Now.AddDays(-15),
-                    IsFeatured = true,
-                    Status = "Available"
-                },
-                new Property
-                {
-                    Id = 2,
-                    Address = "456 River Street",
-                    City = "Coeur d'Alene",
-                    State = "Idaho",
-                    ZipCode = "83814",
-                    Price = 625000,
-                    Bedrooms = 3,
-                    Bathrooms = 2,
-                    SquareFeet = 1950,
-                    PropertyType = "Condo",
-                    Description = "Luxury waterfront condo with panoramic lake views. Modern finishes, open floor plan, and resort-style amenities.",
-                    ImageUrl = "/images/properties/house2.jpg",
-                    ListedDate = DateTime.Now.AddDays(-8),
-                    IsFeatured = true,
-                    Status = "Available"
-                },
-                new Property
-                {
-                    Id = 3,
-                    Address = "789 Pine Ridge Lane",
-                    City = "Idaho Falls",
-                    State = "Idaho",
-                    ZipCode = "83401",
-                    Price = 385000,
-                    Bedrooms = 3,
-                    Bathrooms = 2,
-                    SquareFeet = 1800,
-                    PropertyType = "Townhouse",
-                    Description = "Charming townhouse in quiet neighborhood. Perfect starter home with low maintenance and great schools nearby.",
-                    ImageUrl = "/images/properties/house3.jpg",
-                    ListedDate = DateTime.Now.AddDays(-3),
-                    IsFeatured = true,
-                    Status = "Available"
-                },
-                new Property
-                {
-                    Id = 4,
-                    Address = "321 Eagle Summit Road",
-                    City = "Sun Valley",
-                    State = "Idaho",
-                    ZipCode = "83353",
-                    Price = 1250000,
-                    Bedrooms = 5,
-                    Bathrooms = 4,
-                    SquareFeet = 4200,
-                    PropertyType = "Single Family",
-                    Description = "Luxury mountain estate with ski-in/ski-out access. Gourmet kitchen, wine cellar, and home theater.",
-                    ImageUrl = "/images/properties/house4.jpg",
-                    ListedDate = DateTime.Now.AddDays(-20),
-                    IsFeatured = true,
-                    Status = "Available"
-                },
-                new Property
-                {
-                    Id = 5,
-                    Address = "555 Downtown Boulevard",
-                    City = "Boise",
-                    State = "Idaho",
-                    ZipCode = "83702",
-                    Price = 295000,
-                    Bedrooms = 2,
-                    Bathrooms = 1,
-                    SquareFeet = 1100,
-                    PropertyType = "Condo",
-                    Description = "Modern urban condo in the heart of downtown. Walk to restaurants, shops, and entertainment.",
-                    ImageUrl = "/images/properties/house5.jpg",
-                    ListedDate = DateTime.Now.AddDays(-5),
-                    IsFeatured = true,
-                    Status = "Pending"
-                },
-                new Property
-                {
-                    Id = 6,
-                    Address = "888 Harvest Circle",
-                    City = "Meridian",
-                    State = "Idaho",
-                    ZipCode = "83642",
-                    Price = 525000,
-                    Bedrooms = 4,
-                    Bathrooms = 3,
-                    SquareFeet = 2800,
-                    PropertyType = "Single Family",
-                    Description = "Spacious family home with bonus room and 3-car garage. Large lot with mature landscaping.",
-                    ImageUrl = "/images/properties/house6.jpg",
-                    ListedDate = DateTime.Now.AddDays(-12),
-                    IsFeatured = true,
-                    Status = "Available"
-                }
-            };
+                    Id = listingId,
+                    Address = row["fstrAddress"].ToString(),
+                    City = row["fstrCity"].ToString(),
+                    State = row["fstrState"].ToString(),
+                    ZipCode = row["fintZipCode"].ToString(),
+                    Price = Convert.ToDecimal(row["flngPrice"]),
+                    Bedrooms = Convert.ToInt32(row["fintBeds"]),
+                    Bathrooms = Convert.ToDecimal(row["flngBaths"]),
+                    SquareFeet = Convert.ToInt32(row["fintSquareFeet"]),
+                    PropertyType = row["fstrType"].ToString(),
+                    //Description = row["fstrDescription"]?.ToString() ?? string.Empty,
+                    ImageUrl = imageUrls.FirstOrDefault() ?? "/images/default-house.jpg", // First image for thumbnails
+                    ImageUrls = imageUrls, // All images for gallery
+                    ListedDate = Convert.ToDateTime(row["fdtmListingDate"]),
+                    //IsFeatured = row["fblnIsFeatured"] != DBNull.Value && Convert.ToBoolean(row["fblnIsFeatured"]),
+                    Status = row["fstrStatus"].ToString()
+                });
+            }
+
+            return properties;
         }
     }
 }

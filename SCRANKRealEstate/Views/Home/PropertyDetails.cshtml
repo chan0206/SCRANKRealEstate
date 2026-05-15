@@ -5,11 +5,67 @@
 
 <div class="container py-5">
     <div class="row">
-        <!-- Property Image -->
+        <!-- Property Image Gallery -->
         <div class="col-lg-8 mb-4">
-            <div class="property-detail-image">
-                <img src="/images/default-house.jpg" class="img-fluid rounded" onerror="this.src='/images/properties/default-house.jpg'">
-            </div>
+            @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+            {
+                <!-- Main Image Carousel -->
+                <div id="propertyCarousel" class="carousel slide property-detail-carousel-compact mb-2" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        @for (int i = 0; i < Model.ImageUrls.Count; i++)
+                        {
+                            <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="@i" 
+                                    class="@(i == 0 ? "active" : "")" aria-current="@(i == 0 ? "true" : "false")" 
+                                    aria-label="Slide @(i + 1)"></button>
+                        }
+                    </div>
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < Model.ImageUrls.Count; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <img src="@Model.ImageUrls[i]" class="d-block w-100" alt="@Model.Address - Image @(i + 1)" 
+                                     onerror="this.src='/images/default-house.jpg'">
+                            </div>
+                        }
+                    </div>
+                    @if (Model.ImageUrls.Count > 1)
+                    {
+                        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    }
+                </div>
+
+                <!-- Compact Thumbnail Gallery -->
+                @if (Model.ImageUrls.Count > 1)
+                {
+                    <div class="property-thumbnails-compact">
+                        <div class="thumbnail-scroll">
+                            @for (int i = 0; i < Model.ImageUrls.Count; i++)
+                            {
+                                <img src="@Model.ImageUrls[i]" 
+                                     class="property-thumbnail-compact @(i == 0 ? "active" : "")" 
+                                     alt="Thumbnail @(i + 1)"
+                                     data-bs-target="#propertyCarousel" 
+                                     data-bs-slide-to="@i"
+                                     onerror="this.src='/images/default-house.jpg'">
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="property-detail-image">
+                    <img src="@Model.ImageUrl" alt="@Model.Address" class="img-fluid rounded" 
+                         onerror="this.src='/images/default-house.jpg'">
+                </div>
+            }
         </div>
 
         <!-- Property Info Card -->
@@ -91,4 +147,25 @@
 
 @section Scripts {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script>
+        // Highlight active thumbnail
+        document.addEventListener('DOMContentLoaded', function() {
+            var carousel = document.getElementById('propertyCarousel');
+            if (carousel) {
+                carousel.addEventListener('slide.bs.carousel', function(e) {
+                    // Remove active class from all thumbnails
+                    document.querySelectorAll('.property-thumbnail-compact').forEach(function(thumb) {
+                        thumb.classList.remove('active');
+                    });
+                    // Add active class to current thumbnail
+                    var activeThumb = document.querySelector('.property-thumbnail-compact[data-bs-slide-to="' + e.to + '"]');
+                    if (activeThumb) {
+                        activeThumb.classList.add('active');
+                        // Scroll thumbnail into view
+                        activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    }
+                });
+            }
+        });
+    </script>
 }

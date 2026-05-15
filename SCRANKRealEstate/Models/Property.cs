@@ -14,6 +14,7 @@ namespace SCRANKRealEstate.Models
         public string PropertyType { get; set; } = string.Empty; // e.g., "Single Family", "Condo", "Townhouse"
         public string Description { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = "/images/properties/default-house.jpg";
+        public List<string> ImageUrls { get; set; } = new List<string>(); // Multiple images
         public DateTime ListedDate { get; set; }
         public bool IsFeatured { get; set; }
         public string Status { get; set; } = "Available"; // Available, Pending, Sold
