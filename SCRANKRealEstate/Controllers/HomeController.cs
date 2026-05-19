@@ -153,7 +153,7 @@ namespace SCRANKRealEstate.Controllers
                     Bathrooms = Convert.ToDecimal(row["flngBaths"]),
                     SquareFeet = Convert.ToInt32(row["fintSquareFeet"]),
                     PropertyType = row["fstrType"].ToString(),
-                    //Description = row["fstrDescription"]?.ToString() ?? string.Empty,
+                    Description = row["fstrDescription"]?.ToString() ?? string.Empty,
                     ImageUrl = imageUrls.FirstOrDefault() ?? "/images/default-house.jpg", // First image for thumbnails
                     ImageUrls = imageUrls, // All images for gallery
                     ListedDate = Convert.ToDateTime(row["fdtmListingDate"]),
