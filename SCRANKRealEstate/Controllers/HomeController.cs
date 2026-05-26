@@ -152,17 +152,28 @@ namespace SCRANKRealEstate.Controllers
                     Bedrooms = Convert.ToInt32(row["fintBeds"]),
                     Bathrooms = Convert.ToDecimal(row["flngBaths"]),
                     SquareFeet = Convert.ToInt32(row["fintSquareFeet"]),
+                    Acres = Convert.ToDecimal(row["flngAcres"]),
                     PropertyType = row["fstrType"].ToString(),
                     Description = row["fstrDescription"]?.ToString() ?? string.Empty,
                     ImageUrl = imageUrls.FirstOrDefault() ?? "/images/default-house.jpg", // First image for thumbnails
                     ImageUrls = imageUrls, // All images for gallery
                     ListedDate = Convert.ToDateTime(row["fdtmListingDate"]),
-                    //IsFeatured = row["fblnIsFeatured"] != DBNull.Value && Convert.ToBoolean(row["fblnIsFeatured"]),
+                    IsFeatured = row["fblnIsFeatured"] != DBNull.Value && Convert.ToBoolean(row["fblnIsFeatured"]),
                     Status = row["fstrStatus"].ToString()
                 });
             }
 
             return properties;
+        }
+
+        public IActionResult MortgageCalculator()
+        {
+            return View();
+        }
+
+        public IActionResult FAQ()
+        {
+            return View();
         }
     }
 }

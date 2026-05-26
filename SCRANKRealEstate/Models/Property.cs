@@ -11,6 +11,7 @@ namespace SCRANKRealEstate.Models
         public int Bedrooms { get; set; }
         public decimal Bathrooms { get; set; }
         public int SquareFeet { get; set; }
+        public decimal Acres { get; set; }
         public string PropertyType { get; set; } = string.Empty; // e.g., "Single Family", "Condo", "Townhouse"
         public string Description { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = "/images/properties/default-house.jpg";

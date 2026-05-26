@@ -13,7 +13,7 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-0">
             <div class="container-fluid">
                 <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-house-door"></i> Chandler Real Estate
+                    <i class="bi bi-house-door"></i> Chandler Real Estate Team
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -26,6 +26,12 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Properties">Properties</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="MortgageCalculator">Calculator</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="FAQ">FAQ</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About</a>
@@ -54,6 +60,8 @@
                     <h6>Quick Links</h6>
                     <ul class="list-unstyled small">
                         <li><a asp-controller="Home" asp-action="Properties" class="text-muted">Browse Properties</a></li>
+                        <li><a asp-controller="Home" asp-action="MortgageCalculator" class="text-muted">Mortgage Calculator</a></li>
+                        <li><a asp-controller="Home" asp-action="FAQ" class="text-muted">FAQ</a></li>
                         <li><a asp-controller="Home" asp-action="About" class="text-muted">About Us</a></li>
                         <li><a asp-controller="Home" asp-action="Contact" class="text-muted">Contact</a></li>
                         <li><a asp-controller="Home" asp-action="Privacy" class="text-muted">Privacy Policy</a></li>
@@ -64,15 +72,16 @@
                     <ul class="list-unstyled small text-muted">
                         <li><i class="bi bi-telephone"></i> Julie: (208) 550-1121</li>
                         <li><i class="bi bi-telephone"></i> Bailey: (208) 392-2578</li>
-                        <li><i class="bi bi-envelope"></i> julie@selectpropertiesllc.com</li>
-                        <li><i class="bi bi-envelope"></i> bailey@selectpropertiesllc.com</li>
-                        <li><i class="bi bi-geo-alt"></i> Weiser, Idaho</li>
+                        <li><i class="bi bi-envelope"></i> julie@@selectpropertiesllc.com</li>
+                        <li><i class="bi bi-envelope"></i> bailey@@selectpropertiesllc.com</li>
+                        <li><i class="bi bi-geo-alt"></i> Select Properties <br />524 E Seventh St.<br>Weiser, ID 83672</li>
                     </ul>
                 </div>
             </div>
             <hr>
             <div class="text-center small">
-                &copy; 2026 Chandler Real Estate Team - All Rights Reserved
+                &copy; 2026 Chandler Real Estate Team - All Rights Reserved <br />
+                Powered by SCRANKSports.com
             </div>
         </div>
     </footer>

@@ -11,6 +11,8 @@ var routes = new[]
     "/Home/Privacy",
     "/Home/About",
     "/Home/Contact",
+    "/Home/MortgageCalculator",
+    "/Home/FAQ", 
     "/Home/Properties",
     "/Home/PropertyDetails/1",
     "/Home/PropertyDetails/2",
@@ -24,17 +26,42 @@ var routes = new[]
     "/Home/PropertyDetails/10",
     "/Home/PropertyDetails/11",
     "/Home/PropertyDetails/12"
-
 };
 
 Console.WriteLine("Starting static site generation...");
 Console.WriteLine($"Make sure your app is running at {baseUrl}");
 Console.WriteLine();
 
-// Create output directory
-if (Directory.Exists(outputPath))
-    Directory.Delete(outputPath, true);
-Directory.CreateDirectory(outputPath);
+// Create or clean output directory
+try
+{
+    if (Directory.Exists(outputPath))
+    {
+        Console.WriteLine("Cleaning output directory...");
+        
+        // Try to delete with retry logic
+        for (int i = 0; i < 3; i++)
+        {
+            try
+            {
+                DeleteDirectory(outputPath);
+                break;
+            }
+            catch (UnauthorizedAccessException) when (i < 2)
+            {
+                Console.WriteLine($"  Retrying... ({i + 1}/3)");
+                Thread.Sleep(1000);
+            }
+        }
+    }
+    
+    Directory.CreateDirectory(outputPath);
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Warning: Could not clean directory: {ex.Message}");
+    Console.WriteLine("Continuing with existing files...");
+}
 
 using var client = new HttpClient { BaseAddress = new Uri(baseUrl) };
 
@@ -72,6 +99,22 @@ if (Directory.Exists(wwwrootSource))
 
 Console.WriteLine("\n✓ Static site generation complete!");
 Console.WriteLine($"Output directory: {Path.GetFullPath(outputPath)}");
+
+static void DeleteDirectory(string path)
+{
+    if (!Directory.Exists(path))
+        return;
+
+    // Remove read-only attributes
+    var directory = new DirectoryInfo(path);
+    foreach (var file in directory.GetFiles("*", SearchOption.AllDirectories))
+    {
+        file.Attributes = FileAttributes.Normal;
+    }
+
+    // Now delete
+    Directory.Delete(path, true);
+}
 
 static string FixPaths(string html)
 {
@@ -134,9 +177,24 @@ static void CopyDirectory(string sourceDir, string destDir)
 {
     foreach (var file in Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories))
     {
-        var relativePath = Path.GetRelativePath(sourceDir, file);
-        var destFile = Path.Combine(destDir, relativePath);
-        Directory.CreateDirectory(Path.GetDirectoryName(destFile)!);
-        File.Copy(file, destFile, true);
+        try
+        {
+            var relativePath = Path.GetRelativePath(sourceDir, file);
+            var destFile = Path.Combine(destDir, relativePath);
+            
+            Directory.CreateDirectory(Path.GetDirectoryName(destFile)!);
+            
+            // Remove read-only attribute if exists
+            if (File.Exists(destFile))
+            {
+                File.SetAttributes(destFile, FileAttributes.Normal);
+            }
+            
+            File.Copy(file, destFile, true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  Warning: Could not copy {file}: {ex.Message}");
+        }
     }
 }

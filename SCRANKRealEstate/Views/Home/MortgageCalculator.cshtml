@@ -1,0 +1,217 @@
+@{
+    ViewData["Title"] = "Mortgage Calculator";
+}
+
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-lg-12 text-center">
+            <h1 class="display-5 mb-3">Mortgage Calculator</h1>
+            <p class="lead">Estimate your monthly mortgage payments</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <form id="mortgageForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="homePrice" class="form-label">Home Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="homePrice" value="300000" min="0" step="1000" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="downPayment" class="form-label">Down Payment</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="downPayment" value="60000" min="0" step="1000" required>
+                                </div>
+                                <small class="text-muted">(<span id="downPaymentPercent">20</span>%)</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="interestRate" class="form-label">Interest Rate</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="interestRate" value="6.5" min="0" max="20" step="0.125" required>
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="loanTerm" class="form-label">Loan Term</label>
+                                <select class="form-select" id="loanTerm">
+                                    <option value="15">15 years</option>
+                                    <option value="20">20 years</option>
+                                    <option value="30" selected>30 years</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="propertyTax" class="form-label">Annual Property Tax</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="propertyTax" value="3000" min="0" step="100">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="homeInsurance" class="form-label">Annual Home Insurance</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="homeInsurance" value="1200" min="0" step="100">
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-center mt-4">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="calculateMortgage()">
+                                    <i class="bi bi-calculator"></i> Calculate Payment
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results" class="mt-4 d-none">
+                <div class="card shadow-lg border-primary">
+                    <div class="card-body p-4">
+                        <h3 class="text-center mb-4">Your Monthly Payment</h3>
+                        
+                        <div class="text-center mb-4">
+                            <h1 class="display-3 text-primary fw-bold" id="monthlyPayment">$0</h1>
+                        </div>
+
+                        <div class="row text-center">
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h6 class="text-muted mb-2">Principal & Interest</h6>
+                                    <h5 class="text-primary mb-0" id="principalInterest">$0</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h6 class="text-muted mb-2">Property Tax</h6>
+                                    <h5 class="text-primary mb-0" id="monthlyTax">$0</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h6 class="text-muted mb-2">Home Insurance</h6>
+                                    <h5 class="text-primary mb-0" id="monthlyInsurance">$0</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="p-3 bg-light rounded">
+                                    <h6 class="text-muted mb-2">Loan Amount</h6>
+                                    <h5 class="text-primary mb-0" id="loanAmount">$0</h5>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Total Interest Paid:</strong> <span id="totalInterest" class="text-primary">$0</span></p>
+                                <p class="mb-2"><strong>Total Amount Paid:</strong> <span id="totalPaid" class="text-primary">$0</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Payoff Date:</strong> <span id="payoffDate" class="text-primary">-</span></p>
+                                <p class="mb-2"><strong>Total Payments:</strong> <span id="totalPayments" class="text-primary">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Update down payment percentage as user types
+    document.getElementById('homePrice').addEventListener('input', updateDownPaymentPercent);
+    document.getElementById('downPayment').addEventListener('input', updateDownPaymentPercent);
+
+    function updateDownPaymentPercent() {
+        const homePrice = parseFloat(document.getElementById('homePrice').value) || 0;
+        const downPayment = parseFloat(document.getElementById('downPayment').value) || 0;
+        const percent = homePrice > 0 ? ((downPayment / homePrice) * 100).toFixed(1) : 0;
+        document.getElementById('downPaymentPercent').textContent = percent;
+    }
+
+    function calculateMortgage() {
+        // Get input values
+        const homePrice = parseFloat(document.getElementById('homePrice').value) || 0;
+        const downPayment = parseFloat(document.getElementById('downPayment').value) || 0;
+        const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+        const loanTerm = parseInt(document.getElementById('loanTerm').value) || 30;
+        const propertyTax = parseFloat(document.getElementById('propertyTax').value) || 0;
+        const homeInsurance = parseFloat(document.getElementById('homeInsurance').value) || 0;
+
+        // Calculate loan amount
+        const loanAmount = homePrice - downPayment;
+
+        // Calculate monthly interest rate
+        const monthlyRate = (interestRate / 100) / 12;
+
+        // Calculate number of payments
+        const numberOfPayments = loanTerm * 12;
+
+        // Calculate monthly principal and interest using mortgage formula
+        // M = P [ i(1 + i)^n ] / [ (1 + i)^n - 1]
+        let principalAndInterest = 0;
+        if (monthlyRate > 0) {
+            principalAndInterest = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
+                                   (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+        } else {
+            principalAndInterest = loanAmount / numberOfPayments;
+        }
+
+        // Calculate monthly tax and insurance
+        const monthlyTax = propertyTax / 12;
+        const monthlyInsurance = homeInsurance / 12;
+
+        // Calculate total monthly payment
+        const totalMonthlyPayment = principalAndInterest + monthlyTax + monthlyInsurance;
+
+        // Calculate total interest and total paid
+        const totalPaid = (principalAndInterest * numberOfPayments) + (propertyTax * loanTerm) + (homeInsurance * loanTerm);
+        const totalInterest = (principalAndInterest * numberOfPayments) - loanAmount;
+
+        // Calculate payoff date
+        const payoffDate = new Date();
+        payoffDate.setMonth(payoffDate.getMonth() + numberOfPayments);
+
+        // Display results
+        document.getElementById('monthlyPayment').textContent = '$' + totalMonthlyPayment.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        document.getElementById('principalInterest').textContent = '$' + principalAndInterest.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        document.getElementById('monthlyTax').textContent = '$' + monthlyTax.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        document.getElementById('monthlyInsurance').textContent = '$' + monthlyInsurance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        document.getElementById('loanAmount').textContent = '$' + loanAmount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        document.getElementById('totalInterest').textContent = '$' + totalInterest.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        document.getElementById('totalPaid').textContent = '$' + totalPaid.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        document.getElementById('payoffDate').textContent = payoffDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        document.getElementById('totalPayments').textContent = numberOfPayments + ' payments';
+
+        // Show results with smooth scroll only when button is clicked
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.classList.remove('d-none');
+        
+        // Smooth scroll to results after a brief delay to allow the element to render
+        setTimeout(function() {
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+
+    // Only update percentage on page load, don't auto-calculate
+    window.addEventListener('load', function() {
+        updateDownPaymentPercent();
+    });
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@@1.11.0/font/bootstrap-icons.css">
