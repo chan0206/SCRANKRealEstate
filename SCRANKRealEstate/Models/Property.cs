@@ -18,6 +18,7 @@ namespace SCRANKRealEstate.Models
         public List<string> ImageUrls { get; set; } = new List<string>(); // Multiple images
         public DateTime ListedDate { get; set; }
         public bool IsFeatured { get; set; }
+        public int FeatureNumber { get; set; } // Order for featured properties display
         public string Status { get; set; } = "Available"; // Available, Pending, Sold
     }
 }

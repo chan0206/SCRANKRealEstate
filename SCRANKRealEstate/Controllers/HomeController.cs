@@ -30,8 +30,36 @@ namespace SCRANKRealEstate.Controllers
 
         public IActionResult Properties()
         {
-            var properties = GetAllProperties();
-            return View(properties);
+            var allProperties = GetAllProperties();
+            
+            // Get top 3 featured properties ordered by FeatureNumber
+            var featuredProperties = allProperties
+                .Where(p => p.IsFeatured)
+                .OrderBy(p => p.FeatureNumber)
+                .Take(3)
+                .ToList();
+            
+            // Get all non-featured properties ordered by Id (ListingKey)
+            var nonFeaturedProperties = allProperties
+                .Where(p => !p.IsFeatured)
+                .OrderBy(p => p.Id)
+                .ToList();
+            
+            // Get remaining featured properties (after top 3) ordered by Id
+            var remainingFeaturedProperties = allProperties
+                .Where(p => p.IsFeatured)
+                .OrderBy(p => p.FeatureNumber)
+                .Skip(3)
+                .OrderBy(p => p.Id)
+                .ToList();
+            
+            // Combine: top 3 featured, then all non-featured, then remaining featured
+            var sortedProperties = featuredProperties
+                .Concat(nonFeaturedProperties)
+                .Concat(remainingFeaturedProperties)
+                .ToList();
+            
+            return View(sortedProperties);
         }
 
         public IActionResult PropertyDetails(int id)
@@ -75,7 +103,11 @@ namespace SCRANKRealEstate.Controllers
 
         private List<Property> GetFeaturedProperties()
         {
-            return GetAllProperties().Where(p => p.IsFeatured).Take(6).ToList();
+            return GetAllProperties()
+                .Where(p => p.IsFeatured)
+                .OrderBy(p => p.FeatureNumber)
+                .Take(3)
+                .ToList();
         }
 
         public static void GetListings(DataTable pdtSchools)
@@ -159,6 +191,7 @@ namespace SCRANKRealEstate.Controllers
                     ImageUrls = imageUrls, // All images for gallery
                     ListedDate = Convert.ToDateTime(row["fdtmListingDate"]),
                     IsFeatured = row["fblnIsFeatured"] != DBNull.Value && Convert.ToBoolean(row["fblnIsFeatured"]),
+                    FeatureNumber = row["fintFeatureNumber"] != DBNull.Value ? Convert.ToInt32(row["fintFeatureNumber"]) : 999, // Default to 999 if not set
                     Status = row["fstrStatus"].ToString()
                 });
             }

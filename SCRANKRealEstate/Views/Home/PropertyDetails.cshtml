@@ -1,8 +1,26 @@
 @model SCRANKRealEstate.Models.Property
 @{
-    ViewData["Title"] = Model.Address;
+    ViewData["Title"] = $"{Model.Address} - Property Details";
 }
 
+@section Head {
+    <!-- Open Graph / Social Media Preview Tags for this specific property -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://chandlerrealestateteam.com/Home/PropertyDetails/@Model.Id" />
+    <meta property="og:title" content="@Model.Address - $@Model.Price.ToString("N0")" />
+    <meta property="og:description" content="@Model.Bedrooms BD | @Model.Bathrooms BA | @Model.SquareFeet SF | @Model.City, @Model.State - @Model.Description" />
+    <meta property="og:image" content="https://chandlerrealestateteam.com@(Model.ImageUrls.FirstOrDefault() ?? "/images/default-house.jpg")" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@Model.Address - $@Model.Price.ToString("N0")" />
+    <meta name="twitter:description" content="@Model.Bedrooms BD | @Model.Bathrooms BA | @Model.SquareFeet SF" />
+    <meta name="twitter:image" content="https://chandlerrealestateteam.com@(Model.ImageUrls.FirstOrDefault() ?? "/images/default-house.jpg")" />
+}
+
+<!-- Rest of your PropertyDetails view content remains the same -->
 <div class="container py-5">
     <div class="row">
         <!-- Property Images Gallery -->

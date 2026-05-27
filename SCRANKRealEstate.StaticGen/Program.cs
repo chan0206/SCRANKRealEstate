@@ -88,13 +88,24 @@ foreach (var route in routes)
     }
 }
 
-// Copy wwwroot folder (css, js, images, etc.)
+// Copy wwwroot folder (css, js, images, CNAME, etc.)
 var wwwrootSource = Path.Combine("..", "SCRANKRealEstate", "wwwroot");
 if (Directory.Exists(wwwrootSource))
 {
     Console.WriteLine("\nCopying static assets...");
     CopyDirectory(wwwrootSource, outputPath);
     Console.WriteLine("  ✓ Static assets copied");
+    
+    // Verify CNAME file was copied
+    var cnameFile = Path.Combine(outputPath, "CNAME");
+    if (File.Exists(cnameFile))
+    {
+        Console.WriteLine($"  ✓ CNAME file copied: {File.ReadAllText(cnameFile).Trim()}");
+    }
+    else
+    {
+        Console.WriteLine("  ⚠ Warning: CNAME file not found!");
+    }
 }
 
 Console.WriteLine("\n✓ Static site generation complete!");
