@@ -19,6 +19,8 @@ namespace SCRANKRealEstate.Models
         public DateTime ListedDate { get; set; }
         public bool IsFeatured { get; set; }
         public int FeatureNumber { get; set; } // Order for featured properties display
+
+        public int MLSNumber { get; set; } // Order for featured properties display
         public string Status { get; set; } = "Available"; // Available, Pending, Sold
     }
 }

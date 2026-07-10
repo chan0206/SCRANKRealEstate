@@ -7,7 +7,7 @@
     <!-- Open Graph / Social Media Preview Tags for this specific property -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://chandlerrealestateteam.com/Home/PropertyDetails/@Model.Id" />
-    <meta property="og:title" content="@Model.Address - $@Model.Price.ToString("N0")" />
+    <meta property="og:title" content="@Model.Address - $@Model.Price.ToString("N0") - MLS: @Model.MLSNumber" />
     <meta property="og:description" content="@Model.Bedrooms BD | @Model.Bathrooms BA | @Model.SquareFeet SF | @Model.City, @Model.State - @Model.Description" />
     <meta property="og:image" content="https://chandlerrealestateteam.com@(Model.ImageUrls.FirstOrDefault() ?? "/images/default-house.jpg")" />
     <meta property="og:image:width" content="1200" />
@@ -100,9 +100,13 @@
                             <i class="bi bi-house"></i>
                             <strong>@Model.PropertyType</strong>
                         </p>
-                        <p class="mb-0">
+                        <p class="mb-2">
                             <i class="bi bi-calendar-check"></i>
                             Listed: <strong>@Model.ListedDate.ToString("MMM dd, yyyy")</strong>
+                        </p>
+                        <p class="mb-0">
+                            <i class="bi bi-hash"></i>
+                            MLS: <strong>@Model.MLSNumber</strong>
                         </p>
                     </div>
 

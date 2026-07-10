@@ -96,15 +96,33 @@ if (Directory.Exists(wwwrootSource))
     CopyDirectory(wwwrootSource, outputPath);
     Console.WriteLine("  ✓ Static assets copied");
     
-    // Verify CNAME file was copied
-    var cnameFile = Path.Combine(outputPath, "CNAME");
-    if (File.Exists(cnameFile))
+    // Verify and fix CNAME file
+    var cnameSourceFile = Path.Combine(wwwrootSource, "CNAME");
+    var cnameDestFile = Path.Combine(outputPath, "CNAME");
+    
+    if (File.Exists(cnameSourceFile))
     {
-        Console.WriteLine($"  ✓ CNAME file copied: {File.ReadAllText(cnameFile).Trim()}");
+        var cnameContent = File.ReadAllText(cnameSourceFile).Trim();
+        if (string.IsNullOrWhiteSpace(cnameContent))
+        {
+            Console.WriteLine("  ⚠ Warning: CNAME file is empty in source!");
+            Console.WriteLine("  Creating CNAME file with default domain...");
+            cnameContent = "chandlerrealestateteam.com";
+            File.WriteAllText(cnameSourceFile, cnameContent);
+        }
+        
+        // Ensure CNAME is copied to destination
+        File.WriteAllText(cnameDestFile, cnameContent);
+        Console.WriteLine($"  ✓ CNAME file copied: {cnameContent}");
     }
     else
     {
-        Console.WriteLine("  ⚠ Warning: CNAME file not found!");
+        Console.WriteLine("  ⚠ Warning: CNAME file not found in source!");
+        Console.WriteLine("  Creating CNAME file...");
+        var cnameContent = "chandlerrealestateteam.com";
+        File.WriteAllText(cnameSourceFile, cnameContent);
+        File.WriteAllText(cnameDestFile, cnameContent);
+        Console.WriteLine($"  ✓ CNAME file created: {cnameContent}");
     }
 }
 

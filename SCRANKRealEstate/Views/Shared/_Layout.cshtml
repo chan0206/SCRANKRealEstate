@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Chandler Real Estate Team</title>
     
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H485XKGX71"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-H485XKGX71');
+    </script>
+    
     <!-- SEO Meta Tags -->
     <meta name="description" content="Chandler Real Estate Team - Your trusted Idaho real estate experts. Find homes for sale in Weiser, Payette, and the Treasure Valley. Expert realtors Julie and Bailey Chandler." />
     <meta name="keywords" content="Idaho real estate, Weiser homes for sale, Treasure Valley real estate, Payette homes, Idaho realtor, Julie Chandler, Bailey Chandler, Select Properties LLC" />
@@ -12,29 +21,32 @@
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://chandlerrealestateteam.com/" />
     
-    <!-- Default Open Graph / Social Media Preview Tags (will be overridden by page-specific tags) -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://chandlerrealestateteam.com/" />
-    <meta property="og:title" content="Chandler Real Estate Team - Find Your Dream Property in Idaho" />
-    <meta property="og:description" content="Discover beautiful properties in the Treasure Valley with the Chandler Real Estate Team. Your trusted partner for finding the perfect property in Idaho." />
-    <meta property="og:image" content="https://chandlerrealestateteam.com/images/Homepage/image_0.JPG" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:site_name" content="Chandler Real Estate Team" />
-    <meta property="og:locale" content="en_US" />
-    
-    <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://chandlerrealestateteam.com/" />
-    <meta name="twitter:title" content="Chandler Real Estate Team - Find Your Dream Home in Idaho" />
-    <meta name="twitter:description" content="Discover beautiful properties in the Treasure Valley with the Chandler Real Estate Team." />
-    <meta name="twitter:image" content="https://chandlerrealestateteam.com/images/Homepage/image_0.JPG" />
-    
     <!-- Geo Tags for Local SEO -->
     <meta name="geo.region" content="US-ID" />
     <meta name="geo.placename" content="Weiser, Idaho" />
     <meta name="geo.position" content="44.2508;-116.9693" />
     <meta name="ICBM" content="44.2508, -116.9693" />
+    
+    @if (!IsSectionDefined("Head"))
+    {
+        <!-- Default Open Graph / Social Media Preview Tags (only if page doesn't define its own) -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://chandlerrealestateteam.com/" />
+        <meta property="og:title" content="Chandler Real Estate Team - Find Your Dream Property in Idaho" />
+        <meta property="og:description" content="Discover beautiful properties in the Treasure Valley with the Chandler Real Estate Team. Your trusted partner for finding the perfect property in Idaho." />
+        <meta property="og:image" content="https://chandlerrealestateteam.com/images/Homepage/image_00.JPG" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="Chandler Real Estate Team" />
+        <meta property="og:locale" content="en_US" />
+        
+        <!-- Twitter Card Tags -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://chandlerrealestateteam.com/" />
+        <meta name="twitter:title" content="Chandler Real Estate Team - Find Your Dream Home in Idaho" />
+        <meta name="twitter:description" content="Discover beautiful properties in the Treasure Valley with the Chandler Real Estate Team." />
+        <meta name="twitter:image" content="https://chandlerrealestateteam.com/images/Homepage/image_00.JPG" />
+    }
     
     <!-- Page-specific meta tags will be injected here -->
     @await RenderSectionAsync("Head", required: false)

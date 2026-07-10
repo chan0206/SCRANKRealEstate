@@ -191,7 +191,8 @@ namespace SCRANKRealEstate.Controllers
                     ImageUrls = imageUrls, // All images for gallery
                     ListedDate = Convert.ToDateTime(row["fdtmListingDate"]),
                     IsFeatured = row["fblnIsFeatured"] != DBNull.Value && Convert.ToBoolean(row["fblnIsFeatured"]),
-                    FeatureNumber = row["fintFeatureNumber"] != DBNull.Value ? Convert.ToInt32(row["fintFeatureNumber"]) : 999, // Default to 999 if not set
+                    FeatureNumber = row["fintFeatureNumber"] != DBNull.Value ? Convert.ToInt32(row["fintFeatureNumber"]) : 999, 
+                    MLSNumber = row["fintMLSNumber"] != DBNull.Value ? Convert.ToInt32(row["fintMLSNumber"]) : 999, 
                     Status = row["fstrStatus"].ToString()
                 });
             }
