@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1001,
+    "city": "Cambridge",
+    "state": "ID",
+    "price": 1400000,
+    "imageUrl": "/images/sold/property-1.jpg",
+    "soldDate": "2026-09-02T00:00:00",
+    "status": "Sold"
+  },
+  {
+    "id": 1001,
+    "city": "Weiser",
+    "state": "ID",
+    "price": 190000,
+    "imageUrl": "/images/sold/property-2.jpg",
+    "soldDate": "2026-06-12T00:00:00",
+    "status": "Sold"
+  }
+]
